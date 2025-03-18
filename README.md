@@ -12,3 +12,6 @@
 - locational bias
     * if at pub then more likely to be drunk
     * but at home for example could just be unsteady
+
+## Possible problems
+- Power consumption of constant data processing
