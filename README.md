@@ -4,7 +4,7 @@
 - Android device
 
 ## Idea
-App monitors movement
+- App monitors movement
     - accelerometer
     - gyroscope
 - ML to detect patterns
