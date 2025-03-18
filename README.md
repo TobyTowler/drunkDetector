@@ -14,6 +14,8 @@
     * but at home for example could just be unsteady
 
 - Average movement over x time
+- omit stillness from model prediction
+    * if standing still then there is no sure way to tell which outcome is correct
 
 
 ## Plan

@@ -26,6 +26,7 @@ public class DashboardFragment extends Fragment {
 
         final TextView textView = binding.percentageDrunkTextBox;
         dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         return root;
     }
 
