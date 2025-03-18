@@ -13,5 +13,12 @@
     * if at pub then more likely to be drunk
     * but at home for example could just be unsteady
 
+- Average movement over x time
+
+
+## Plan
+- Use A3 app to gain training data
+- 
+
 ## Possible problems
 - Power consumption of constant data processing
