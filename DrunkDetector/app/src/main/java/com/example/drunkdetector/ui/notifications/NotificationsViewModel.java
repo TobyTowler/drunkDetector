@@ -17,3 +17,4 @@ public class NotificationsViewModel extends ViewModel {
         return mText;
     }
 }
+
