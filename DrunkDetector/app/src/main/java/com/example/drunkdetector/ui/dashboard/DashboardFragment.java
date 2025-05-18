@@ -30,7 +30,7 @@ public class DashboardFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        // Get ViewModel at Activity level to share between fragments
+
         dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
 
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
@@ -39,7 +39,7 @@ public class DashboardFragment extends Fragment {
         final TextView textView = binding.percentageDrunkTextBox;
         dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        dashboardViewModel.refreshDrunkness();
+//        dashboardViewModel.refreshDrunkness();
 
         EditText emergencyContactInput = binding.emergencyContactInput;
         Button saveButton = binding.saveButton;
@@ -86,7 +86,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        dashboardViewModel.refreshDrunkness();
+//        dashboardViewModel.refreshDrunkness();
     }
 
     @Override

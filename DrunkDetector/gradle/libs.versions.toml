@@ -1,5 +1,7 @@
 [versions]
 agp = "8.8.0"
+app = "1.4.0"
+appAutomotive = "1.2.0-rc01"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -12,6 +14,10 @@ navigationFragment = "2.8.9"
 navigationUi = "2.8.9"
 
 [libraries]
+app = { module = "androidx.car.app:app", version.ref = "app" }
+app-automotive = { module = "androidx.car.app:app-automotive", version.ref = "app" }
+app-automotive-v120rc01 = { module = "androidx.car.app:app-automotive", version.ref = "appAutomotive" }
+app-testing = { module = "androidx.car.app:app-testing", version.ref = "app" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

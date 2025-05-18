@@ -32,4 +32,4 @@
     * [x] sent notificaion
     * [x] chose 50-70% threshold
 - Android auto
-    * dont drive and drive screen based on threshold
+    * [ ] dont drive and drive screen based on threshold

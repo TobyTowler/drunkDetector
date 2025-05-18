@@ -35,14 +35,14 @@ public class PeriodicDrunkChecker {
             boolean detectionEnabled = prefs.getBoolean(PREF_DETECTION_ENABLED, false);
 
             if (detectionEnabled) {
-                int drunkPercentage = performDrunkCheck(applicationContext);
+                int drunkPercentage = calculateDrunkness.getDrunkness(1);
 
                 updateDashboard(drunkPercentage);
 
                 if (drunkPercentage > 60) {
                     if (NotificationPermissionHelper.hasNotificationPermission(applicationContext)) {
                         DrunkNotificationManager.sendDrunkAlert(applicationContext, drunkPercentage);
-                        Log.d(TAG, "Notification sent for drunkness level: " + drunkPercentage + "%");
+                        Log.d(TAG, "Notification sent for drunkenness level: " + drunkPercentage + "%");
                     }
 
                     if (SMSPermissionHelper.hasSmsPermission(applicationContext)) {
@@ -92,16 +92,6 @@ public class PeriodicDrunkChecker {
         Log.d(TAG, "Stopped periodic drunk checking");
     }
 
-    private static int performDrunkCheck(Context context) {
-        int drunkPercentage = -1;
-        try {
-            drunkPercentage = (int) calculateDrunkness.getDrunkness(1.1);
-            Log.d(TAG, "Current drunkness: " + drunkPercentage + "%");
-        } catch (Exception e) {
-            Log.e(TAG, "Error checking drunkness", e);
-        }
-        return drunkPercentage;
-    }
 
     private static void updateDashboard(int drunkPercentage) {
         try {
