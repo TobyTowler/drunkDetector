@@ -24,3 +24,12 @@
 
 ## Possible problems
 - Power consumption of constant data processing
+
+
+## App TODOs
+- notification manager 
+    * add sms
+    * sent notificaion
+    * chose 50-70% threshold
+- Android auto
+    * dont drive and drive screen based on threshold
