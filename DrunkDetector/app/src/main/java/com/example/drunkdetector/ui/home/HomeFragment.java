@@ -1,5 +1,6 @@
 package com.example.drunkdetector.ui.home;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -37,7 +38,7 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        Switch detectionSwitch = binding.switch1;
+        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch detectionSwitch = binding.switch1;
 
         SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         boolean detectionEnabled = prefs.getBoolean(PREF_DETECTION_ENABLED, false);

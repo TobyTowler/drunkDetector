@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Neutral Theme for drunk detector -->
+    <style name="DrunkDetector_SafeTheme" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/neutral_primary</item>
+        <item name="colorPrimaryVariant">@color/neutral_primary_dark</item>
+        <item name="colorPrimaryDark">@color/neutral_primary_dark</item>
+        <item name="colorAccent">@color/neutral_accent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/neutral_background</item>
+        <item name="android:colorBackground">@color/neutral_background</item>
+        <item name="android:textColor">@color/neutral_text</item>
+    </style>
+
+    <!-- Red Theme for drunk detector -->
+    <style name="DrunkDetector_WarningTheme" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/red_primary</item>
+        <item name="colorPrimaryVariant">@color/red_primary_dark</item>
+        <item name="colorPrimaryDark">@color/red_primary_dark</item>
+        <item name="colorAccent">@color/red_accent</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="android:windowBackground">@color/bright_red_background</item>
+        <item name="android:colorBackground">@color/bright_red_background</item>
+
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

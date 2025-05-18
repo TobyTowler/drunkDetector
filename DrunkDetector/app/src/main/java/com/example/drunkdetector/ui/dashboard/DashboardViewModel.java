@@ -2,8 +2,6 @@ package com.example.drunkdetector.ui.dashboard;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -19,7 +17,6 @@ public class DashboardViewModel extends AndroidViewModel {
     private final MutableLiveData<String> mText;
     private final Context appContext;
     private int currentDrunkPercentage = 0;
-    private boolean initialValueSet = false;
 
     public DashboardViewModel(Application application) {
         super(application);
@@ -48,7 +45,6 @@ public class DashboardViewModel extends AndroidViewModel {
     public void refreshDrunkness() {
         try {
             currentDrunkPercentage = (int) calculateDrunkness.getDrunkness(1.1);
-            initialValueSet = true;
 
             // Update text display
             mText.setValue("Chance you are drunk: \n" + currentDrunkPercentage + "%");

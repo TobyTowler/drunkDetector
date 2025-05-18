@@ -15,9 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.drunkdetector.MainActivity;
 import com.example.drunkdetector.databinding.FragmentDashboardBinding;
-import com.example.drunkdetector.utils.DrunkNotificationManager;
 import com.example.drunkdetector.utils.NotificationPermissionHelper;
 
 public class DashboardFragment extends Fragment {
@@ -39,7 +37,6 @@ public class DashboardFragment extends Fragment {
         final TextView textView = binding.percentageDrunkTextBox;
         dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-//        dashboardViewModel.refreshDrunkness();
 
         EditText emergencyContactInput = binding.emergencyContactInput;
         Button saveButton = binding.saveButton;
@@ -86,7 +83,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        dashboardViewModel.refreshDrunkness();
     }
 
     @Override
