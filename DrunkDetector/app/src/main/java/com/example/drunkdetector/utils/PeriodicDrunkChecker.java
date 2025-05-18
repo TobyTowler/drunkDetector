@@ -4,25 +4,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 import com.example.drunkdetector.calculateDrunkness;
-import com.example.drunkdetector.utils.DrunkNotificationManager;
-import com.example.drunkdetector.utils.DrunkSMSManager;
+import com.example.drunkdetector.ui.dashboard.DashboardViewModel;
 
-/**
- * Utility class that periodically checks drunkness and sends notifications
- * when detection is enabled via the switch
- */
 public class PeriodicDrunkChecker {
     private static final String TAG = "PeriodicDrunkChecker";
     private static final String PREFS_NAME = "DrunkDetectorPrefs";
     private static final String PREF_DETECTION_ENABLED = "detectionEnabled";
+    private static final String PREF_EMERGENCY_CONTACT = "emergency_contact";
 
-    private static final long CHECK_INTERVAL_MS = 1; // Check every minute
+    private static final long CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static boolean isRunning = false;
     private static Context applicationContext;
+    private static DashboardViewModel dashboardViewModel;
 
     private static final Runnable periodicTask = new Runnable() {
         @Override
@@ -38,24 +36,47 @@ public class PeriodicDrunkChecker {
 
             if (detectionEnabled) {
                 int drunkPercentage = performDrunkCheck(applicationContext);
-                if (drunkPercentage > 50 && NotificationPermissionHelper.hasNotificationPermission(context)) {
-                    DrunkNotificationManager.sendDrunkAlert(context, drunkPercentage);
-                    Log.d(TAG, "Notification sent for drunkness level: " + drunkPercentage + "%");
+
+                updateDashboard(drunkPercentage);
+
+                if (drunkPercentage > 60) {
+                    if (NotificationPermissionHelper.hasNotificationPermission(applicationContext)) {
+                        DrunkNotificationManager.sendDrunkAlert(applicationContext, drunkPercentage);
+                        Log.d(TAG, "Notification sent for drunkness level: " + drunkPercentage + "%");
+                    }
+
+                    if (SMSPermissionHelper.hasSmsPermission(applicationContext)) {
+                        String phoneNumber = prefs.getString(PREF_EMERGENCY_CONTACT, "");
+
+                        if (!phoneNumber.isEmpty()) {
+                            String message = "The user of this phone is drunk. Please look after them :)";
+
+                            try {
+                                String formattedNumber = formatUKPhoneNumber(phoneNumber);
+
+                                SmsManager smsManager = SmsManager.getDefault();
+                                smsManager.sendTextMessage(formattedNumber, null, message, null, null);
+                                Log.d(TAG, "SMS alert sent to emergency contact: " + formattedNumber);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Failed to send SMS", e);
+                            }
+                        } else {
+                            Log.w(TAG, "No emergency contact set, SMS not sent");
+                        }
+                    } else {
+                        Log.e(TAG, "Cannot send SMS: No permission");
+                    }
                 }
-                // Schedule next check
+
                 handler.postDelayed(this, CHECK_INTERVAL_MS);
             } else {
                 isRunning = false;
-                // Do not schedule next check
+                Log.d(TAG, "Detection disabled, stopping checks");
             }
         }
     };
 
-    /**
-     * Start periodic checking if not already running
-     */
     public static void startChecking(Context context) {
-        // Store the application context to avoid memory leaks
         applicationContext = context.getApplicationContext();
 
         if (!isRunning) {
@@ -65,29 +86,48 @@ public class PeriodicDrunkChecker {
         }
     }
 
-    /**
-     * Stop periodic checking
-     */
     public static void stopChecking() {
         isRunning = false;
         handler.removeCallbacks(periodicTask);
         Log.d(TAG, "Stopped periodic drunk checking");
     }
 
-    /**
-     * Performs a single drunkness check and sends notification if needed
-     */
     private static int performDrunkCheck(Context context) {
         int drunkPercentage = -1;
         try {
-            // Calculate drunkness
             drunkPercentage = (int) calculateDrunkness.getDrunkness(1.1);
             Log.d(TAG, "Current drunkness: " + drunkPercentage + "%");
-
-            // Send notification if drunkness is high
         } catch (Exception e) {
             Log.e(TAG, "Error checking drunkness", e);
         }
         return drunkPercentage;
+    }
+
+    private static void updateDashboard(int drunkPercentage) {
+        try {
+            android.content.Intent intent = new android.content.Intent("com.example.drunkdetector.DRUNK_UPDATE");
+            intent.putExtra("drunk_percentage", drunkPercentage);
+            applicationContext.sendBroadcast(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating dashboard", e);
+        }
+    }
+
+    private static String formatUKPhoneNumber(String phoneNumber) {
+        String cleaned = phoneNumber.replaceAll("[^\\d+]", "");
+
+        if (cleaned.startsWith("+")) {
+            return cleaned;
+        }
+
+        if (cleaned.startsWith("44")) {
+            return "+" + cleaned;
+        }
+
+        if (cleaned.startsWith("0")) {
+            return "+44" + cleaned.substring(1);
+        }
+
+        return "+44" + cleaned;
     }
 }

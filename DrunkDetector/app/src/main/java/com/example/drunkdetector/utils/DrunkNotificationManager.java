@@ -19,9 +19,7 @@ public class DrunkNotificationManager {
     private static final String CHANNEL_DESC = "Notifications about your intoxication level";
     private static final int NOTIFICATION_ID = 1001;
 
-    // Initialize notification channel (call this in Application onCreate or MainActivity onCreate)
     public static void createNotificationChannel(Context context) {
-        // Only needed for Android 8.0 (API level 26) and higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
@@ -29,7 +27,6 @@ public class DrunkNotificationManager {
                     NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription(CHANNEL_DESC);
 
-            // Register the channel with the system
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
@@ -37,9 +34,7 @@ public class DrunkNotificationManager {
         }
     }
 
-    // Send drunk alert notification
     public static void sendDrunkAlert(Context context, int drunkPercentage) {
-        // Create an intent that opens the MainActivity when notification is tapped
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -49,7 +44,6 @@ public class DrunkNotificationManager {
                 PendingIntent.FLAG_IMMUTABLE
         );
 
-        // Build notification content based on drunk percentage
         String title = "Drunk Alert";
         String message;
 
@@ -61,7 +55,6 @@ public class DrunkNotificationManager {
             message = "Your intoxication level: "+drunkPercentage+"%";
         }
 
-        // Create the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp) // Use an existing notification icon from your resources
                 .setContentTitle(title)
@@ -70,14 +63,11 @@ public class DrunkNotificationManager {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        // Show the notification
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         try {
             notificationManager.notify(NOTIFICATION_ID, builder.build());
         } catch (SecurityException e) {
-            // Handle the case where notification permission is not granted
-            // For Android 13+ you need to request POST_NOTIFICATIONS permission
         }
     }
 }
