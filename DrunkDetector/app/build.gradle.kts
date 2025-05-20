@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+
     namespace = "com.example.drunkdetector"
     compileSdk = 35
 
@@ -38,7 +39,7 @@ android {
         resolutionStrategy {
             force("androidx.car.app:app:1.4.0")
             force("androidx.car.app:app-projected:1.4.0")
-
+            
             // Disable caching for these modules
             cacheDynamicVersionsFor(0, "seconds")
             cacheChangingModulesFor(0, "seconds")
