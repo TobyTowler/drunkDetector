@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,11 +16,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.drunkdetector.databinding.FragmentDashboardBinding;
 import com.example.drunkdetector.utils.NotificationPermissionHelper;
+import com.example.drunkdetector.utils.PeriodicDrunkChecker;
 
 public class DashboardFragment extends Fragment {
 
-    private static final String PREFS_NAME = "DrunkDetectorPrefs"; // Fixed empty string
+    private static final String TAG = "DashboardFragment";
+    private static final String PREFS_NAME = "DrunkDetectorPrefs";
     private static final String PREF_EMERGENCY_CONTACT = "emergency_contact";
+    private static final String PREF_DETECTION_ENABLED = "detectionEnabled";
 
     private FragmentDashboardBinding binding;
     private DashboardViewModel dashboardViewModel;
@@ -34,10 +36,6 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.percentageDrunkTextBox;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
-
         EditText emergencyContactInput = binding.emergencyContactInput;
         Button saveButton = binding.saveButton;
 
@@ -47,10 +45,12 @@ public class DashboardFragment extends Fragment {
 
         saveButton.setOnClickListener(v -> {
             String phoneNumber = emergencyContactInput.getText().toString().trim();
+            SharedPreferences.Editor editor = prefs.edit();
 
             if (phoneNumber.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a phone number", Toast.LENGTH_SHORT).show();
-                return;
+                editor.putString(PREF_EMERGENCY_CONTACT, phoneNumber);
+                editor.apply();
+                Toast.makeText(requireContext(), "Removed emergency contact", Toast.LENGTH_SHORT).show();
             }
 
             if (!isValidUKMobileNumber(phoneNumber)) {
@@ -60,7 +60,6 @@ public class DashboardFragment extends Fragment {
 
             String formattedNumber = formatUKPhoneNumber(phoneNumber);
 
-            SharedPreferences.Editor editor = prefs.edit();
             editor.putString(PREF_EMERGENCY_CONTACT, formattedNumber);
             editor.apply();
 
@@ -71,27 +70,69 @@ public class DashboardFragment extends Fragment {
         notifyButton.setOnClickListener(v -> {
             if (NotificationPermissionHelper.hasNotificationPermission(requireContext())) {
                 dashboardViewModel.sendTestNotification();
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean(PREF_DETECTION_ENABLED, true);
+                editor.apply();
+
+                PeriodicDrunkChecker.startChecking(requireContext());
+
                 Toast.makeText(requireContext(), "Test notification sent", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(requireContext(), "Notifications Disabled", Toast.LENGTH_SHORT).show();
             }
         });
 
+
         return root;
     }
+
+    private void updateTextFromChecker() {
+        int percentage = PeriodicDrunkChecker.getLastDrunkPercentage();
+        binding.percentageDrunkTextBox.setText("Chance you are drunk: \n" + percentage + "%");
+    }
+
+    private Runnable textUpdater = new Runnable() {
+        @Override
+        public void run() {
+            if (isAdded() && binding != null) {
+                updateTextFromChecker();
+                // Schedule next update
+                if (requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        .getBoolean(PREF_DETECTION_ENABLED, false)) {
+                    binding.getRoot().postDelayed(this, 2000); // Every 2 seconds
+                }
+            }
+        }
+    };
 
     @Override
     public void onResume() {
         super.onResume();
+
+        SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (prefs.getBoolean(PREF_DETECTION_ENABLED, false)) {
+            binding.getRoot().post(textUpdater);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (binding != null) {
+            binding.getRoot().removeCallbacks(textUpdater);
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (binding != null) {
+            binding.getRoot().removeCallbacks(textUpdater);
+        }
         binding = null;
     }
-
-
 
     private boolean isValidUKMobileNumber(String phoneNumber) {
         String cleaned = phoneNumber.replaceAll("[^\\d+]", "");
