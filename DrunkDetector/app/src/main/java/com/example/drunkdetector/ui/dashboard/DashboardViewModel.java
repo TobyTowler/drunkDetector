@@ -14,9 +14,12 @@ import com.example.drunkdetector.utils.NotificationPermissionHelper;
 
 public class DashboardViewModel extends AndroidViewModel {
     private static final String TAG = "DashboardViewModel";
-    private final MutableLiveData<String> mText;
+//    private final MutableLiveData<String> mText;
     private final Context appContext;
     private int currentDrunkPercentage = 0;
+
+    private MutableLiveData<String> mText = new MutableLiveData<>();
+
 
     public DashboardViewModel(Application application) {
         super(application);
@@ -53,5 +56,12 @@ public class DashboardViewModel extends AndroidViewModel {
             mText.setValue("Error calculating drunkenness");
             Log.e(TAG, "Error refreshing drunkenness", e);
         }
+    }
+
+
+
+
+    public void updateText(String newText) {
+        mText.postValue(newText); // or setValue() if you're on the main thread
     }
 }

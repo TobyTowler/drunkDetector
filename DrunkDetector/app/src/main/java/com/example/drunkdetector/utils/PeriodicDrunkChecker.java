@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.drunkdetector.calculateDrunkness;
 import com.example.drunkdetector.ui.dashboard.DashboardViewModel;
@@ -16,11 +17,18 @@ public class PeriodicDrunkChecker {
     private static final String PREF_DETECTION_ENABLED = "detectionEnabled";
     private static final String PREF_EMERGENCY_CONTACT = "emergency_contact";
 
-    private static final long CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+    private static final long CHECK_INTERVAL_MS = 50; // 5 minutes
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static boolean isRunning = false;
     private static Context applicationContext;
-    private static DashboardViewModel dashboardViewModel;
+    private static DashboardViewModel viewModel;
+
+    public PeriodicDrunkChecker(DashboardViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
+
+
+
 
     private static final Runnable periodicTask = new Runnable() {
         @Override
@@ -37,6 +45,8 @@ public class PeriodicDrunkChecker {
             if (detectionEnabled) {
                 int drunkPercentage = calculateDrunkness.calculateDrunkness();
 
+//                viewModel.refreshDrunkness();
+//                viewModel.updateText("Chance you are drunk: \n" + drunkPercentage + "%");
                 updateDashboard(drunkPercentage);
 
                 if (drunkPercentage > 60) {
@@ -98,6 +108,8 @@ public class PeriodicDrunkChecker {
             android.content.Intent intent = new android.content.Intent("com.example.drunkdetector.DRUNK_UPDATE");
             intent.putExtra("drunk_percentage", drunkPercentage);
             applicationContext.sendBroadcast(intent);
+//            TextView percentageDrunkTextBox = findViewById(R.id.percentageDrunkTextBox);
+//            percentageDrunkTextBox.setText("75% Drunk");
         } catch (Exception e) {
             Log.e(TAG, "Error updating dashboard", e);
         }

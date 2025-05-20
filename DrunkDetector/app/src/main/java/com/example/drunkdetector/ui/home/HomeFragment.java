@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
 
         if (detectionEnabled) {
             PeriodicDrunkChecker.startChecking(requireContext());
-            dashboardViewModel.refreshDrunkness();
+//            dashboardViewModel.refreshDrunkness();
         }
 
         detectionSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -58,7 +58,7 @@ public class HomeFragment extends Fragment {
             if (isChecked) {
                 PeriodicDrunkChecker.startChecking(requireContext());
 
-                dashboardViewModel.refreshDrunkness();
+//                dashboardViewModel.refreshDrunkness();
 
             } else {
                 PeriodicDrunkChecker.stopChecking();

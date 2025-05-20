@@ -626,8 +626,6 @@ if __name__ == "__main__":
   clf = RandomForestClassifier(n_estimators=100, random_state=0)
   skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
 
-  #scores = cross_val_score(clf, X_train, Y_train, cv=skf, scoring='f1')
-  #print(f"Mean cross score: {np.mean(scores)}")
   if data is None or data.shape[0] == 0:
     raise ValueError("No training data was extracted. Check input directories or feature extraction.")
   clf.fit(X_train, Y_train)
@@ -649,6 +647,9 @@ if __name__ == "__main__":
   clf_reduced = RandomForestClassifier(n_estimators=100, random_state=0)
   clf_reduced.fit(X_train_reduced, Y_train)
 
+  scores = cross_val_score(clf_reduced, X_train_reduced, Y_train, cv=skf, scoring='accuracy')
+  print(f"Mean cross score: {np.mean(scores)}")
+
   initial_type = [('float_input', FloatTensorType([None, X_train_reduced.shape[1]]))]
   onnx_model = convert_sklearn(clf_reduced, initial_types=initial_type)
   with open("drunk_model.onnx", "wb") as f:
@@ -656,7 +657,17 @@ if __name__ == "__main__":
 
   #evaluate_generalized_model(X_train, Y_train, X_test, Y_test)
 
+  # Top-20 selected feature indices: [  4   5  14  22  23  28  29  32  33  34  36  37  41  42  49  50  59  74
+  #   81 100]
 
+#===== Feature importances =====
+#[ 50  42  37  34  28  36  32  49  74  33  65  68  47  79  82 100   5   4
+#  81  14  93  22  59  96  97  67   1  51  88  52  69  55  84   9  40  77
+ # 76 114  85  23 105  25   2 107  57  17  56  26  12  15  30  31  18  95
+ # 108   0  10 104  41  38 106  83  62  48  24 102  43  20  91  19 110  61
+ #  86  45   6  29  27  13 103  92   8  71  80  21 113 115  44  16  72  53
+ # 111  87 116  94 117  54   3 101  60  73  90  64  99  63 109  78  58  35
+ #  46  98 112  89  75  39   7  70  66  11]
 
 
 

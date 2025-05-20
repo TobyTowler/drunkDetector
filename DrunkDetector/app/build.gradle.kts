@@ -4,6 +4,18 @@ plugins {
 
 android {
 
+    packagingOptions {
+        resources {
+            excludes.add("/META-INF/LICENSE.md")
+            excludes.add("/META-INF/LICENSE")
+            excludes.add("/META-INF/DEPENDENCIES")
+            excludes.add("/META-INF/NOTICE")
+            excludes.add("/META-INF/NOTICE.txt")
+            excludes.add("/META-INF/ASL2.0")
+            excludes.add("/META-INF/LICENSE-notice.md")
+        }
+    }
+
     namespace = "com.example.drunkdetector"
     compileSdk = 35
 
@@ -39,7 +51,18 @@ android {
         resolutionStrategy {
             force("androidx.car.app:app:1.4.0")
             force("androidx.car.app:app-projected:1.4.0")
-            
+
+            // Force correct version of surefire-api
+            force("org.apache.maven.surefire:surefire-api:2.19.1")
+
+            // Exclude common-java5 wherever it appears
+            eachDependency {
+                if (requested.group == "org.apache.maven.surefire" &&
+                    requested.name == "common-java5") {
+                    useTarget("org.apache.maven.surefire:surefire-api:2.19.1")
+                }
+            }
+
             // Disable caching for these modules
             cacheDynamicVersionsFor(0, "seconds")
             cacheChangingModulesFor(0, "seconds")
