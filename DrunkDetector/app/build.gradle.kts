@@ -47,7 +47,9 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.jdsp)
+    implementation(libs.commons.math4.core)
+    implementation(libs.onnxruntime.android)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)

@@ -35,7 +35,7 @@ public class PeriodicDrunkChecker {
             boolean detectionEnabled = prefs.getBoolean(PREF_DETECTION_ENABLED, false);
 
             if (detectionEnabled) {
-                int drunkPercentage = calculateDrunkness.getDrunkness(1);
+                int drunkPercentage = calculateDrunkness.calculateDrunkness();
 
                 updateDashboard(drunkPercentage);
 

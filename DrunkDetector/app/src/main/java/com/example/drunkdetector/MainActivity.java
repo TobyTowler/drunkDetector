@@ -44,6 +44,16 @@ public class MainActivity extends AppCompatActivity {
         notificationDialogShownThisSession = false;
         super.onCreate(savedInstanceState);
 
+        try {
+            ModelHolder.initialize(this); // create the model so other parts of the app can use it
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Intent serviceIntent = new Intent(this, SensorService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+        // start the service to collect sensor data
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 

@@ -44,7 +44,7 @@ public class DashboardViewModel extends AndroidViewModel {
 
     public void refreshDrunkness() {
         try {
-            currentDrunkPercentage = (int) calculateDrunkness.getDrunkness(1.1);
+            currentDrunkPercentage = (int) calculateDrunkness.calculateDrunkness();
 
             // Update text display
             mText.setValue("Chance you are drunk: \n" + currentDrunkPercentage + "%");

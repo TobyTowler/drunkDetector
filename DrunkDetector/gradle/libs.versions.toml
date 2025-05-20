@@ -2,6 +2,8 @@
 agp = "8.8.0"
 app = "1.4.0"
 appAutomotive = "1.2.0-rc01"
+commonsMath4Core = "4.0-beta1"
+jdsp = "3.1.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -12,12 +14,15 @@ lifecycleLivedataKtx = "2.6.1"
 lifecycleViewmodelKtx = "2.6.1"
 navigationFragment = "2.8.9"
 navigationUi = "2.8.9"
+onnxruntimeAndroid = "1.16.3"
 
 [libraries]
 app = { module = "androidx.car.app:app", version.ref = "app" }
 app-automotive = { module = "androidx.car.app:app-automotive", version.ref = "app" }
 app-automotive-v120rc01 = { module = "androidx.car.app:app-automotive", version.ref = "appAutomotive" }
 app-testing = { module = "androidx.car.app:app-testing", version.ref = "app" }
+commons-math4-core = { module = "org.apache.commons:commons-math4-core", version.ref = "commonsMath4Core" }
+jdsp = { module = "com.github.psambit9791:jdsp", version.ref = "jdsp" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -28,6 +33,7 @@ lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-lived
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+onnxruntime-android = { module = "com.microsoft.onnxruntime:onnxruntime-android", version.ref = "onnxruntimeAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

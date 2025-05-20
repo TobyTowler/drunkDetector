@@ -1,6 +1,6 @@
 package com.example.drunkdetector.AA;
 
-import static com.example.drunkdetector.calculateDrunkness.calculateDrunkness;
+import com.example.drunkdetector.calculateDrunkness;
 
 import android.os.Bundle;
 
@@ -24,7 +24,7 @@ public class DrunkDetectorScreen extends Screen {
 
     public DrunkDetectorScreen(@NonNull CarContext carContext) {
         super(carContext);
-        drunkPercentage = calculateDrunkness();
+        drunkPercentage = calculateDrunkness.calculateDrunkness();
 
         isRedThemeApplied = drunkPercentage >= 50;
 
@@ -36,7 +36,7 @@ public class DrunkDetectorScreen extends Screen {
     @NonNull
     @Override
     public Template onGetTemplate() {
-        drunkPercentage = calculateDrunkness();
+        drunkPercentage = calculateDrunkness.calculateDrunkness();
 
         boolean shouldUseRedTheme = drunkPercentage >= 50;
         if (shouldUseRedTheme != isRedThemeApplied) {
