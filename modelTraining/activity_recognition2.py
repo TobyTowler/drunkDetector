@@ -5,9 +5,11 @@ import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from collections import Counter
 import copy
+from sklearn.metrics import confusion_matrix
 
 from shap.explainers.other import Random
-from sklearn.model_selection import cross_val_score, train_test_split, StratifiedKFold
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import cross_val_score, train_test_split, StratifiedKFold, GridSearchCV
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_selection import RFE
@@ -568,6 +570,7 @@ def plot_confusion_matrix(confusion_matrix, classes, normalize=False, title='Con
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -619,9 +622,7 @@ if __name__ == "__main__":
       data = np.append(data, features, axis=0)
       dataLabels = np.append(dataLabels, labels, axis=0)
 
-  #X_train, Y_train, X_test, Y_test = train_test_split(data, dataLabels, test_size=0.2, random_state=0)
-  X_train = data.copy()
-  Y_train = dataLabels.copy()
+  X_train, X_test, Y_train, Y_test = train_test_split(data, dataLabels, test_size=0.2, random_state=0)
 
   clf = RandomForestClassifier(n_estimators=100, random_state=0)
   skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
@@ -643,32 +644,96 @@ if __name__ == "__main__":
   selected_indices = selector.get_support(indices=True)
 
   X_train_reduced = selector.transform(X_train)
+  X_test_reduced = selector.transform(X_test)
 
   clf_reduced = RandomForestClassifier(n_estimators=100, random_state=0)
-  clf_reduced.fit(X_train_reduced, Y_train)
+  #clf_reduced.fit(X_train_reduced, Y_train)
 
-  scores = cross_val_score(clf_reduced, X_train_reduced, Y_train, cv=skf, scoring='accuracy')
-  print(f"Mean cross score: {np.mean(scores)}")
+  param_grid = {
+    'n_estimators': [100, 300, 500],
+    'max_depth': [None, 10, 20],
+    'min_samples_split': [2, 5],
+    'min_samples_leaf': [1, 2],
+    'max_features': ['sqrt', 'log2'],
+    'class_weight': ['balanced']  # Useful if you have class imbalance
+  }
+
+  grid_search_rf = GridSearchCV(
+    clf_reduced,
+    param_grid,
+    cv=5,
+    scoring='accuracy',
+    n_jobs=-1,
+    verbose=2,
+    return_train_score=True
+  )
+  grid_search_rf.fit(X_train_reduced, Y_train)
+  model = grid_search_rf.best_estimator_
+  print("Best parameters found:", grid_search_rf.best_params_)
+  print("Best cross-val score:", grid_search_rf.best_score_)
+  #model.fit(X_train_reduced, Y_train)
+
+  Y_predict = model.predict(X_test_reduced)
+
+  # Basic accuracy
+  print("Accuracy:", accuracy_score(Y_test, Y_predict))
+
+  # Detailed metrics
+  print(classification_report(Y_test, Y_predict))
+
+  cm = confusion_matrix(Y_test, Y_predict)
+
+  plot_confusion_matrix(cm, ["Drunk", "Not Drunk"], title="Confusion Matrix of Drunk Prediction")
+
+  # Confusion matrix
+  print(cm)
+
+  explainer = shap.TreeExplainer(model)
+  shap_values = explainer.shap_values(X_test_reduced)
+  num_classes = shap_values.shape[2]
+
+  for i in range(num_classes):
+    shap.summary_plot(shap_values[:, :, i], X_test_reduced)
+
+  #scores = cross_val_score(clf_reduced, X_train_reduced, Y_train, cv=skf, scoring='accuracy')
+  #print(f"Mean cross score: {np.mean(scores)}")
 
   initial_type = [('float_input', FloatTensorType([None, X_train_reduced.shape[1]]))]
-  onnx_model = convert_sklearn(clf_reduced, initial_types=initial_type)
+  onnx_model = convert_sklearn(model, initial_types=initial_type)
   with open("drunk_model.onnx", "wb") as f:
     f.write(onnx_model.SerializeToString())
 
   #evaluate_generalized_model(X_train, Y_train, X_test, Y_test)
 
-  # Top-20 selected feature indices: [  4   5  14  22  23  28  29  32  33  34  36  37  41  42  49  50  59  74
-  #   81 100]
 
-#===== Feature importances =====
-#[ 50  42  37  34  28  36  32  49  74  33  65  68  47  79  82 100   5   4
-#  81  14  93  22  59  96  97  67   1  51  88  52  69  55  84   9  40  77
- # 76 114  85  23 105  25   2 107  57  17  56  26  12  15  30  31  18  95
- # 108   0  10 104  41  38 106  83  62  48  24 102  43  20  91  19 110  61
- #  86  45   6  29  27  13 103  92   8  71  80  21 113 115  44  16  72  53
- # 111  87 116  94 117  54   3 101  60  73  90  64  99  63 109  78  58  35
- #  46  98 112  89  75  39   7  70  66  11]
+#Best parameters found: {'class_weight': 'balanced', 'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 100}
+# Best cross-val score: 0.9623737770104117
+# Accuracy: 0.9595375722543352
+#               precision    recall  f1-score   support
+#
+#        Drunk       0.90      0.92      0.91        75
+#    Not Drunk       0.98      0.97      0.97       271
+#
+#     accuracy                           0.96       346
+#    macro avg       0.94      0.95      0.94       346
+# weighted avg       0.96      0.96      0.96       346
+#
+# Confusion matrix, without normalization
+# [[ 69   6]
+#  [  8 263]]
+# [[ 69   6]
+#  [  8 263]]
 
+# ===== Feature importances =====
+# [  5  32  41   4  13   1 114  42  27  49 100  47  15   2 117  50  77  34
+#   36  37  25  62  31  81  10 110  28  85  33  55  69  76  59 102  86  93
+#   58  82  74  12  24 103  38  22 109  96   3  79  51  68  72  83 115 105
+#   43  88  14  67  18 111  65  90  56  78  17  26  60 106  97  84  23   9
+#   46  21  75  57  73  71  54  48  89  20  64   0 108 107 116  29  99   8
+#  104   6  40  16  61  45 101 113  44  92  87  52  19  94  95  30  91  53
+#   63 112  80  98  35  11  39   7  66  70]
+# Top-20 selected feature indices: [  2   4   5  12  13  32  36  37  41  42  43  47  49  50  55  77  79  81
+#  100 117]
 
 
 
