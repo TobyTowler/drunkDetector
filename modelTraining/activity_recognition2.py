@@ -735,5 +735,30 @@ if __name__ == "__main__":
 # Top-20 selected feature indices: [  2   4   5  12  13  32  36  37  41  42  43  47  49  50  55  77  79  81
 #  100 117]
 
+# ===== Feature importances =====
+# [ 96  82  69  93  97  68  61  65  88  74  60 100   8  34  67  29  79 110
+#    1  41   9  59   0  37  13  89   6  52  38  64  83 107  24  57 112  10
+#  105  72  28  76  31 106  21  44  36  85  48  94  53  55  42  18  51  23
+#   26  22  73  27  20 116  98 104  32  99 109  14  86  43  33 102  45  95
+#   17  30  63   2  56  58  47 114  87   5 101  50  80  91  90 111  81  77
+#  115  71 113  40  54 117 103  19  12  92  75  35  15   3  84  25  16  46
+#  108  62  39  66   7  49   4  78  70  11]
+# Top-20 selected feature indices: [ 1  6  9 13 29 34 36 38 41 59 60 65 67 68 69 82 88 93 96 97]
 
-
+# Best parameters found: {'class_weight': 'balanced', 'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 100}
+# Best cross-val score: 0.9563504823151125
+# Accuracy: 0.9692307692307692
+#               precision    recall  f1-score   support
+#
+#        Drunk       0.97      0.92      0.95       116
+#    Not Drunk       0.97      0.99      0.98       274
+#
+#     accuracy                           0.97       390
+#    macro avg       0.97      0.96      0.96       390
+# weighted avg       0.97      0.97      0.97       390
+#
+# Confusion matrix, without normalization
+# [[107   9]
+#  [  3 271]]
+# [[107   9]
+#  [  3 271]]

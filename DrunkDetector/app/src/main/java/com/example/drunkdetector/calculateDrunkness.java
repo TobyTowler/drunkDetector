@@ -45,6 +45,13 @@ public class calculateDrunkness {
         Mean mean = new Mean();
         PearsonsCorrelation pc = new PearsonsCorrelation();
 
+        double varAccel = var.evaluate(totalAccels);
+
+        double energyAccel = 0;
+        for (double i : totalAccels) {
+            energyAccel += Math.pow(i, 2);
+        }
+
         double maxAccel = 0;
         for (double i : totalAccels) {
             if (i > maxAccel) {
@@ -58,6 +65,11 @@ public class calculateDrunkness {
         FastFourier ft = new FastFourier(totalAccels);
         ft.transform();
         double[] freq = ft.getMagnitude(onlyPositive);
+
+        double powerAccel = 0;
+        for (double i : freq) {
+            powerAccel += Math.pow(i, 2);
+        }
 
         double sum = 0;
         for (double i: freq) {
@@ -83,6 +95,13 @@ public class calculateDrunkness {
         }
         meanJerkAccels /= jerks.length;
 
+        double varAccelY = var.evaluate(accelY);
+
+        double energyAccelY = 0;
+        for (double i : accelY) {
+            energyAccelY += Math.pow(i, 2);
+        }
+
         double kurtosisAccelY = kurt.evaluate(accelY);
 
         ft = new FastFourier(accelY);
@@ -95,6 +114,8 @@ public class calculateDrunkness {
                 peakAccelY = i;
             }
         }
+
+        double meanAmpAccelY = mean.evaluate(freq);
 
         double powerAccelY = 0;
         for (double i : freq) {
@@ -110,6 +131,59 @@ public class calculateDrunkness {
             meanJerkAccelY += jerk;
         }
         meanJerkAccelY /= jerks.length;
+
+        double meanGyro = mean.evaluate(totalGyros);
+        double varGyro = var.evaluate(totalGyros);
+
+        double energyGyro = 0;
+        for (double i : totalGyros) {
+            energyGyro += Math.pow(i, 2);
+        }
+
+        ft = new FastFourier(totalGyros);
+        ft.transform();
+        freq = ft.getMagnitude(onlyPositive);
+
+        double peakGyro = 0;
+        for (double i : freq) {
+            if (i > peakGyro) {
+                peakGyro = i;
+            }
+        }
+
+        double powerGyro = 0;
+        for (double i : freq) {
+            powerGyro += Math.pow(i, 2);
+        }
+
+        double meanAmpGyro = mean.evaluate(freq);
+
+        ft = new FastFourier(gyroX);
+        ft.transform();
+        freq = ft.getMagnitude(onlyPositive);
+
+        double powerGyroX = 0;
+        for (double i : freq) {
+            powerGyroX += Math.pow(i, 2);
+        }
+
+        double varGyroY = var.evaluate(gyroY);
+
+        double energyGyroY = 0;
+        for (double i : gyroY) {
+            energyGyroY += Math.pow(i, 2);
+        }
+
+        ft = new FastFourier(gyroY);
+        ft.transform();
+        freq = ft.getMagnitude(onlyPositive);
+
+        double powerGyroY = 0;
+        for (double i : freq) {
+            powerGyroY += Math.pow(i, 2);
+        }
+
+        double meanAmpGyroY = mean.evaluate(freq);
 
         double meanAccelZ = mean.evaluate(accelZ);
         double varAccelZ = var.evaluate(accelZ);
@@ -189,7 +263,7 @@ public class calculateDrunkness {
 
         double correlationGyroZX = pc.correlation(gyroZ, gyroX);
 
-        float[] features = {(float)maxAccel, (float)kurtosisAccel, (float)skewAccel, (float)entropyAccel, (float)meanJerkAccels, (float)kurtosisAccelY, (float)peakAccelY, (float)powerAccelY, (float)meanJerkAccelY, (float)meanAccelZ, (float)varAccelZ, (float)skewAccelZ, (float)zeroCrossAccelZ, (float)peakAccelZ, (float)meanJerkAccelZ, (float)kurtosisGyroX, (float)energyGyroX, (float)peakGyroX, (float)meanJerkGyroY, (float)correlationGyroZX};
+        float[] features = {(float)varAccel, (float)energyAccel, (float)powerAccel, (float)meanJerkAccels, (float)varAccelY, (float)energyAccelY, (float)peakAccelY, (float)meanAmpAccelY, (float)meanJerkAccelY, (float)meanGyro, (float)varGyro, (float)energyGyro, (float)peakGyro, (float)powerGyro, (float)meanAmpGyro, (float)powerGyroX, (float)varGyroY, (float)energyGyroY, (float)powerGyroY, (float)meanAmpGyroY};
 
         return getDrunkness(features);
 

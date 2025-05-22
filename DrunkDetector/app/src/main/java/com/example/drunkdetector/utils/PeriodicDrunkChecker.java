@@ -16,7 +16,7 @@ public class PeriodicDrunkChecker {
     private static final String PREF_DETECTION_ENABLED = "detectionEnabled";
     private static final String PREF_EMERGENCY_CONTACT = "emergency_contact";
 
-    private static final long CHECK_INTERVAL_MS = 2000; // 2 seconds for testing
+    private static final long CHECK_INTERVAL_MS = 150; // 2 seconds for testing
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static boolean isRunning = false;
     private static Context applicationContext;
