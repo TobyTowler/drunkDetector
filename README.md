@@ -1,9 +1,10 @@
 # Drunk Detector
 
-Android app utilising machine learning to detect drunkenness levels in a person based on their movement while the phone is in their pocket.
+Java Android app utilising machine learning to detect drunkenness in a person based on their movement while the phone is in their pocket.
 
 ## Equipment
-- Android device - running Android 11 or newer due to Android Auto functionality
+- Android device 
+    * Must be running Android 11 or newer due to Android Auto functionality
 
 ## Demo and Report
 - **[This video](https://www.youtube.com/watch?v=eP60vuYehAI)** shows:
