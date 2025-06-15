@@ -1,35 +1,28 @@
 # Drunk Detector
 
-## Equiptment
-- Android device
+Android app utilising machine learning to detect drunkenness levels in a person based on their movement while the phone is in their pocket.
 
-## Idea
-- App monitors movement
-    - accelerometer
-    - gyroscope
-- ML to detect patterns
-- communicates with car to not let you drunk drive
-- locational bias
-    * if at pub then more likely to be drunk
-    * but at home for example could just be unsteady
+## Equipment
+- Android device - running Android 11 or newer due to Android Auto functionality
 
-- Average movement over x time
-- omit stillness from model prediction
-    * if standing still then there is no sure way to tell which outcome is correct
-
-
-## Plan
-- Use A3 app to gain training data
-- 
-
-## Possible problems
-- Power consumption of constant data processing
+## Demo and Report
+- **[This video](https://www.youtube.com/watch?v=eP60vuYehAI)** shows:
+    * Live demonstration
+    * App overview
+    * Presentation
+- **[This report](DrunkDetectorReport.pdf)** outlines:
+    * Motivation
+    * Data collection
+    * Data processing
+    * User feedback
 
 
-## App TODOs
-- notification manager 
-    * [x] add sms
-    * [x] sent notificaion
-    * [x] chose 50-70% threshold
-- Android auto
-    * [ ] dont drive and drive screen based on threshold
+## How it works
+- Custom Onnx model trained in Python then loaded to the Java side:
+    * Reads from accelerometer and gyroscope within the device
+    * Averages the last 4 seconds of data
+    * Predicts percentage change of drunkenness
+- if predicted drunkenness is > 60%:
+    * Send user notification of drunkenness
+    * Send SMS message to a chooseable emergency contact
+    * Sync with Android Auto to alert the user not to drive 
